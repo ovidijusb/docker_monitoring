@@ -1,12 +1,12 @@
 #
-# Cookbook:: vinted-monitoring
+# Cookbook:: docker_monitoring
 # Spec:: default
 #
 # Copyright:: 2019, The Authors, All Rights Reserved.
 
 require 'spec_helper'
 
-describe 'vinted-monitoring::default' do
+describe 'docker_monitoring::default' do
   context 'When all attributes are default, on Ubuntu 16.04' do
     let(:chef_run) do
       # for a complete list of available platforms and versions see:

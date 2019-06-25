@@ -1,11 +1,7 @@
-# vinted-monitoring CHANGELOG
+# docker_monitoring CHANGELOG
 
-This file is used to list changes made in each version of the vinted-monitoring cookbook.
+This file is used to list changes made in each version of the docker_monitoring cookbook.
 
 # 0.1.0
 
 Initial release.
-
-- change 0
-- change 1
-
