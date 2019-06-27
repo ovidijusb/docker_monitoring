@@ -9,6 +9,15 @@ bash 'install_cadvisor' do
   not_if { File.exist?('/usr/local/bin/cadvisor') }
 end
 
+template '/etc/sysconfig/cadvisor' do
+  source 'cadvisor/cadvisor.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  variables(bind_ip: node['network']['gateway'], bind_port: node['cadvisor']['port'])
+  notifies :restart, 'service[cadvisor.service]', :delayed
+end
+
 systemd_unit 'cadvisor.service' do
   content <<-SUL.gsub(/^\s+/, '')
   [Unit]
@@ -16,10 +25,15 @@ systemd_unit 'cadvisor.service' do
 
   [Service]
   User=root
-  ExecStart=/usr/local/bin/cadvisor
+  EnvironmentFile=/etc/sysconfig/cadvisor
+  ExecStart=/usr/local/bin/cadvisor $OPTIONS
 
   [Install]
   WantedBy=multi-user.target
   SUL
-  action [:create, :enable, :start]
+  action %i[create enable]
+end
+
+service 'cadvisor.service' do
+  action :start
 end

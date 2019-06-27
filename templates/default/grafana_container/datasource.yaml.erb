@@ -9,7 +9,7 @@ datasources:
   type: prometheus
   access: proxy
   orgId: 1
-  url: http://prometheus:9090
+  url: <%= @prometheus_url %>:<%= @prometheus_port %>
   password:
   user:
   database:

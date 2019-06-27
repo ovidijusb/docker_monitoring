@@ -7,6 +7,15 @@ end
 
 package 'node_exporter'
 
+template '/etc/sysconfig/node_exporter' do
+  source 'node_exporter/node_exporter.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  variables(bind_ip: node['network']['gateway'], bind_port: node['node_exporter']['port'])
+  notifies :restart, 'service[node_exporter.service]', :delayed
+end
+
 systemd_unit 'node_exporter.service' do
   content <<-SUF.gsub(/^\s+/, '')
   [Unit]
@@ -20,5 +29,9 @@ systemd_unit 'node_exporter.service' do
   [Install]
   WantedBy=multi-user.target
   SUF
-  action [:create, :enable, :start]
+  action %i[create enable]
+end
+
+service 'node_exporter.service' do
+  action :start
 end

@@ -6,20 +6,21 @@ directory '/root/prometheus_container' do
   action :create
 end
 
-template '/root/prometheus_container/Dockerfile' do
+cookbook_file '/root/prometheus_container/Dockerfile' do
   source 'prometheus_container/Dockerfile'
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :redeploy, 'docker_container[prometheus]'
+  notifies :redeploy, 'docker_container[prometheus]', :delayed
 end
 
 template '/root/prometheus_container/prometheus.yml' do
-  source 'prometheus_container/prometheus.yml'
+  source 'prometheus_container/prometheus.yml.erb'
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :redeploy, 'docker_container[prometheus]'
+  variables(host_ip: node['network']['gateway'], prometheus_port: node['prometheus']['port'], node_exporter_port: node['node_exporter']['port'], cadvisor_port: node['cadvisor']['port'])
+  notifies :redeploy, 'docker_container[prometheus]', :delayed
 end
 
 docker_image 'local/prometheus' do
@@ -31,9 +32,9 @@ end
 docker_container 'prometheus' do
   repo 'local/prometheus'
   tag 'latest'
-  port '9090:9090'
+  port "#{node['prometheus']['port']}:#{node['prometheus']['port']}"
   volume 'prometheus_data:/prometheus'
   host_name 'prometheus'
-  network_mode 'v-net'
+  network_mode 'private_net'
   action :run
 end
